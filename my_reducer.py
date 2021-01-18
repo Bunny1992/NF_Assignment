@@ -1,6 +1,7 @@
 from itertools import groupby
 from operator import itemgetter
 import sys
+import pandas as pd
 
 
 # Iterator function that returns and separates
@@ -9,27 +10,12 @@ def read_mapper(file, separator='\t'):
     for line in file:
         yield line.rstrip().split(separator, 1)
 
-
-# Import the movie titles file from distributed cache,
-# and load it into a python dict so each movie year can
-# be accessed by a MovieID key
-def movies(file_name):
-
-    movies_data = {}
-    f = open(file_name)
-
-    for line in f:
-        mov, year, name = line.rstrip().split(',', 2)
-        movies_data[mov] = year + ',' + name
-
-    f.close()
-    return movies_data
-
-
 def main():
 
     mapper = read_mapper(sys.stdin)
-    movie_names = movies('movie_titles.txt')
+    colnames = ["movie_id", "Year", "movie_name"]
+    movie_data = pd.read_csv("movie_titles.csv", encoding='latin-1', names=colnames, header=None)
+    movie_data["mov"] = movie_data['Year'].astype(str) + "," + movie_data['movie_name']
 
     for line in mapper:
 
@@ -50,7 +36,7 @@ def main():
                 for movie, value in group:
 
                     # Accumulate ratings and count
-                    rating, date = value.split(',', 1)
+                    rating, date = value.split('::', 1)
                     ratings += int(rating)
                     count += 1
 
@@ -66,7 +52,7 @@ def main():
                     elif (last < dateInt):
                         last = dateInt
 
-                year, name = movie_names[movie].split(',', 1)
+                year, name = movie_data["mov"].split(',', 1)
 
                 avg = float(ratings) / count
 
