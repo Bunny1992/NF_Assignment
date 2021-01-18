@@ -1,0 +1,9 @@
+hadoop jar $HADOOP_HOME/contrib/streaming/hadoop-0.19.0-streaming.jar \
+-input /D:/NetflixAssignment/combined*.txt
+-output Output\
+-mapper my_mapper.py \
+-reducer my_reducer.py \
+-file /D:/NetflixAssignment/my_mapper.py \
+-file /D:/NetflixAssignment/my_reducer.py \
+-cacheFile 'hdfs://s49-1.local:9001/data/movie_titles.txt#movie_titles.txt' \
+-jobconf mapred.job.name='NetflixAssignment'
